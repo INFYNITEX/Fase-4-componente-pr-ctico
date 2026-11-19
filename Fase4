@@ -87,4 +87,87 @@ class Cliente(Entidad):
     def describir(self):
         return f"{self.identificador} | {self.nombre} | {self.correo} | {self.telefono}"
 
+# Clase base para los servicios.
+class Servicio(Entidad, ABC):
+    def __init__(self, identificador, nombre, tarifa, disponible=True):
+        super().__init__(identificador)
+        if not nombre or not str(nombre).strip():
+            raise ErrorValidacion("El nombre del servicio es obligatorio.")
+        if not isinstance(tarifa, (int, float)) or isinstance(tarifa, bool) or tarifa <= 0:
+            raise ErrorValidacion("La tarifa debe ser mayor que cero.")
+        self.nombre = str(nombre).strip()
+        self.tarifa = float(tarifa)
+        self.disponible = disponible
+
+    def revisar_disponibilidad(self):
+        if not self.disponible:
+            raise ErrorServicio("El servicio no está disponible.")
+
+    def calcular_total(self, duracion, impuesto=0, descuento=0):
+        if not isinstance(duracion, (int, float)) or isinstance(duracion, bool) or duracion <= 0:
+            raise ErrorValidacion("La duración debe ser mayor que cero.")
+        if not 0 <= impuesto <= 100:
+            raise ErrorValidacion("El impuesto debe estar entre 0 y 100.")
+        if not 0 <= descuento <= 100:
+            raise ErrorValidacion("El descuento debe estar entre 0 y 100.")
+
+        total = self.tarifa * duracion
+        total = total + (total * impuesto / 100)
+        total = total - (total * descuento / 100)
+        return round(total, 2)
+
+    @abstractmethod
+    def validar_duracion(self, duracion):
+        pass
+
+    @abstractmethod
+    def calcular_costo(self, duracion=1, impuesto=0, descuento=0):
+        pass
+
+    @abstractmethod
+    def describir(self):
+        pass
+
+
+# Tipos de servicio que ofrece la empresa.
+class ReservaSala(Servicio):
+    def validar_duracion(self, duracion):
+        if not isinstance(duracion, (int, float)) or isinstance(duracion, bool) or not 0 < duracion <= 12:
+            raise ErrorValidacion("La sala se reserva por un máximo de 12 horas.")
+
+    def calcular_costo(self, duracion=1, impuesto=0, descuento=0):
+        self.validar_duracion(duracion)
+        return self.calcular_total(duracion, impuesto, descuento)
+
+    def describir(self):
+        return f"Sala: {self.nombre} | Tarifa por hora: ${self.tarifa:,.2f}"
+
+
+class AlquilerEquipo(Servicio):
+    def validar_duracion(self, duracion):
+        if not isinstance(duracion, (int, float)) or isinstance(duracion, bool) or not 0 < duracion <= 30:
+            raise ErrorValidacion("El alquiler debe ser de máximo 30 días.")
+
+    def calcular_costo(self, duracion=1, impuesto=0, descuento=0):
+        self.validar_duracion(duracion)
+        return self.calcular_total(duracion, impuesto, descuento)
+
+    def describir(self):
+        return f"Equipo: {self.nombre} | Tarifa por día: ${self.tarifa:,.2f}"
+
+
+class Asesoria(Servicio):
+    def validar_duracion(self, duracion):
+        if not isinstance(duracion, (int, float)) or isinstance(duracion, bool) or not 1 <= duracion <= 8:
+            raise ErrorValidacion("La asesoría debe durar de 1 a 8 horas.")
+
+    def calcular_costo(self, duracion=1, impuesto=0, descuento=0):
+        self.validar_duracion(duracion)
+        return self.calcular_total(duracion, impuesto, descuento)
+
+    def describir(self):
+        return f"Asesoría: {self.nombre} | Tarifa por hora: ${self.tarifa:,.2f}"
+
+
+
 

@@ -1,0 +1,47 @@
+# Herramientas para crear las clases y guardar los errores.
+from abc import ABC, abstractmethod
+import logging
+
+
+# Aquí se guardan los eventos y errores del programa.
+logging.basicConfig(
+    filename="software_fj.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    encoding="utf-8"
+)
+
+
+# Errores que puede presentar el sistema.
+class ErrorSistema(Exception):
+    pass
+
+
+class ErrorValidacion(ErrorSistema):
+    pass
+
+
+class ErrorServicio(ErrorSistema):
+    pass
+
+
+class ErrorReserva(ErrorSistema):
+    pass
+
+
+# Clase base para los elementos del sistema.
+class Entidad(ABC):
+    def __init__(self, identificador):
+        if not identificador or not str(identificador).strip():
+            raise ErrorValidacion("El identificador es obligatorio.")
+        self._identificador = str(identificador).strip()
+
+    @property
+    def identificador(self):
+        return self._identificador
+
+    @abstractmethod
+    def describir(self):
+        pass
+
+

@@ -284,3 +284,115 @@ class SistemaSoftwareFJ:
         for elemento in elementos:
             print(elemento.describir())
 
+# Menú para utilizar el sistema.
+def menu(sistema):
+    while True:
+        print("\n========== SOFTWARE FJ ==========")
+        print("1. Registrar cliente")
+        print("2. Registrar servicio")
+        print("3. Crear reserva")
+        print("4. Confirmar reserva")
+        print("5. Cancelar reserva")
+        print("6. Ver clientes")
+        print("7. Ver servicios")
+        print("8. Ver reservas")
+        print("9. Cambiar disponibilidad de un servicio")
+        print("0. Salir")
+
+        try:
+            opcion = input("Seleccione una opción: ").strip()
+
+            if opcion == "1":
+                cliente = Cliente(
+                    input("Identificador: "),
+                    input("Nombre: "),
+                    input("Correo: "),
+                    input("Teléfono: ")
+                )
+                sistema.registrar_cliente(cliente)
+                print("Cliente registrado.")
+
+            elif opcion == "2":
+                print("1. Sala  2. Alquiler de equipo  3. Asesoría")
+                tipo = input("Tipo de servicio: ").strip()
+                identificador = input("Identificador: ")
+                nombre = input("Nombre: ")
+                tarifa = float(input("Tarifa: "))
+
+                if tipo == "1":
+                    servicio = ReservaSala(identificador, nombre, tarifa)
+                elif tipo == "2":
+                    servicio = AlquilerEquipo(identificador, nombre, tarifa)
+                elif tipo == "3":
+                    servicio = Asesoria(identificador, nombre, tarifa)
+                else:
+                    raise ErrorValidacion("Tipo de servicio no válido.")
+
+                sistema.registrar_servicio(servicio)
+                print("Servicio registrado.")
+
+            elif opcion == "3":
+                identificador = input("Identificador de la reserva: ")
+                id_cliente = input("Identificador del cliente: ")
+                id_servicio = input("Identificador del servicio: ")
+                duracion = float(input("Duración: "))
+                impuesto = float(input("Impuesto (0 si no aplica): ") or 0)
+                descuento = float(input("Descuento (0 si no aplica): ") or 0)
+                reserva = sistema.crear_reserva(
+                    identificador, id_cliente, id_servicio,
+                    duracion, impuesto, descuento
+                )
+                print(reserva.describir())
+
+            elif opcion == "4":
+                reserva = sistema.buscar_reserva(input("Identificador: "))
+                print(reserva.procesar())
+
+            elif opcion == "5":
+                reserva = sistema.buscar_reserva(input("Identificador: "))
+                reserva.cancelar()
+                print("Reserva cancelada.")
+
+            elif opcion == "6":
+                sistema.listar(sistema.clientes, "CLIENTES")
+            elif opcion == "7":
+                sistema.listar(sistema.servicios, "SERVICIOS")
+            elif opcion == "8":
+                sistema.listar(sistema.reservas, "RESERVAS")
+            elif opcion == "9":
+                disponible = sistema.cambiar_disponibilidad(input("ID del servicio: "))
+                print("Servicio disponible." if disponible else "Servicio no disponible.")
+            elif opcion == "0":
+                print("Gracias por utilizar Software FJ.")
+                break
+            else:
+                raise ErrorValidacion("Seleccione una opción válida.")
+
+        except ErrorSistema as error:
+            print("Error:", error)
+            logging.exception("Error controlado en el menú.")
+        except ValueError:
+            print("Error: debe ingresar un número válido.")
+            logging.exception("Dato numérico no válido.")
+        except KeyboardInterrupt:
+            print("\nPrograma cerrado por el usuario.")
+            logging.warning("Interrupción del usuario.")
+            break
+        except Exception:
+            print("Ocurrió un error. El programa continuará.")
+            logging.exception("Error inesperado en el menú.")
+
+
+# Inicio del programa.
+def main():
+    sistema = SistemaSoftwareFJ()
+    logging.info("Inicio de Software FJ.")
+    try:
+        menu(sistema)
+    finally:
+        logging.info("Fin de Software FJ.")
+        print("Registro guardado en software_fj.log.")
+
+
+if __name__ == "__main__":
+    main()

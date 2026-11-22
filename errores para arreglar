@@ -1,7 +1,7 @@
-1. El colocar mal un dato devuelve al menú de inicio #solucionar que al poner mal un dato solo vuelva a pedirlo.
-2. El programa no limpia el log en cada operación y queda sobremontado, se ve mal visualmente.
-3. (IMPORTANTE) PONER UN TIPO MENÚ DE INFO DONDE QUEDE REGISTRADO LA ID/datos PARA MAYOR eficiencia visual.
-4. La función "9" cambiar servicio no está funcionando, corregir y agregar además cancelar clientes.
-5. Agregar detalles, el programa dice "identificador" pero no menciona cuál.
-6. En confirmar reserva, una vez confirmada, al darle de nuevo marca "No se pudo procesar la reserva", poner reserva ya confirmada.
+1. El colocar mal un dato devuelve al menú de inicio #solucionar que al poner mal un dato solo vuelva a pedirlo. (LISTO)
+2. El programa no limpia el log en cada operación y queda sobremontado, se ve mal visualmente. (NO ENCONTRE SOLUCION)
+3. (IMPORTANTE) PONER UN TIPO MENÚ DE INFO DONDE QUEDE REGISTRADO LA ID/datos PARA MAYOR eficiencia visual. (LISTO)
+4. La función "9" cambiar servicio no está funcionando, corregir y agregar además cancelar clientes.  (YA)
+5. Agregar detalles, el programa dice "identificador" pero no menciona cuál. (NO ENCONTRE SOLUCION)
+6. En confirmar reserva, una vez confirmada, al darle de nuevo marca "No se pudo procesar la reserva", poner reserva ya confirmada. (NO RESULETA)
 7. #opcional Cancelar reserva no elimina la reserva #opcional (pero esto puede ser bueno para tener un registro).

@@ -1,3 +1,4 @@
+
 # Herramientas para crear las clases y guardar los errores.
 from abc import ABC, abstractmethod
 import logging
@@ -86,6 +87,7 @@ class Cliente(Entidad):
 
     def describir(self):
         return f"{self.identificador} | {self.nombre} | {self.correo} | {self.telefono}"
+
 
 # Clase base para los servicios.
 class Servicio(Entidad, ABC):
@@ -205,7 +207,7 @@ class Reserva(Entidad):
             self.confirmar()
         except ErrorSistema as error:
             logging.exception("No se pudo procesar la reserva.")
-            raise ErrorReserva("No se pudo procesar la reserva.") from error
+            raise ErrorReserva(f"No se pudo procesar la reserva: {error}") from error
         else:
             logging.info("Reserva procesada: %s", self.identificador)
             return f"Reserva confirmada. Total: ${self.costo:,.2f}"
@@ -270,10 +272,12 @@ class SistemaSoftwareFJ:
         logging.info("Reserva creada: %s", identificador)
         return reserva
 
-    def cambiar_disponibilidad(self, identificador):
+    def cambiar_disponibilidad(self, identificador, disponible):
         servicio = self.buscar_servicio(identificador)
-        servicio.disponible = not servicio.disponible
-        logging.info("Disponibilidad cambiada: %s", identificador)
+        if not isinstance(disponible, bool):
+            raise ErrorValidacion("Seleccione una disponibilidad válida.")
+        servicio.disponible = disponible
+        logging.info("Disponibilidad actualizada: %s", identificador)
         return servicio.disponible
 
     def listar(self, elementos, titulo):
@@ -283,6 +287,7 @@ class SistemaSoftwareFJ:
             return
         for elemento in elementos:
             print(elemento.describir())
+
 
 # Menú para utilizar el sistema.
 def menu(sistema):
@@ -360,7 +365,18 @@ def menu(sistema):
             elif opcion == "8":
                 sistema.listar(sistema.reservas, "RESERVAS")
             elif opcion == "9":
-                disponible = sistema.cambiar_disponibilidad(input("ID del servicio: "))
+                identificador = input("ID del servicio: ").strip()
+                print("1. Activar servicio")
+                print("2. Desactivar servicio")
+                estado = input("Seleccione una opción: ").strip()
+
+                if estado == "1":
+                    disponible = sistema.cambiar_disponibilidad(identificador, True)
+                elif estado == "2":
+                    disponible = sistema.cambiar_disponibilidad(identificador, False)
+                else:
+                    raise ErrorValidacion("Seleccione 1 para activar o 2 para desactivar.")
+
                 print("Servicio disponible." if disponible else "Servicio no disponible.")
             elif opcion == "0":
                 print("Gracias por utilizar Software FJ.")
